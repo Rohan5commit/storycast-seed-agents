@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Protocol
 
-from storycast.clients import ModelArkClient, SeedSpeechClient
+from storycast.clients.elevenlabs_tts import ElevenLabsTTSClient
+from storycast.clients.modelark import ModelArkClient
+from storycast.clients.seed_speech import SeedSpeechClient
 from storycast.config import Settings, get_settings
 from storycast.ffmpeg import concat_scene_videos, mux_scene_video
 from storycast.models import RunManifest, SceneArtifact
@@ -13,24 +15,30 @@ from storycast.utils import ensure_command, ensure_directory, slugify, write_jso
 ProgressCallback = Callable[[str], None]
 
 
+class TTSClient(Protocol):
+    def synthesize(self, text: str, output_path: Path) -> Path:
+        ...
+
+
 class StoryCastPipeline:
     def __init__(
         self,
         settings: Settings | None = None,
         modelark_client: ModelArkClient | None = None,
         seed_speech_client: SeedSpeechClient | None = None,
+        tts_client: TTSClient | None = None,
     ) -> None:
         self.settings = settings or get_settings()
         self.modelark_client = modelark_client or ModelArkClient(self.settings)
-        self.seed_speech_client = seed_speech_client or SeedSpeechClient(self.settings)
+        self.seed_speech_client = seed_speech_client
+        self.tts_client = tts_client
 
     def run(self, topic: str, progress_callback: ProgressCallback | None = None) -> RunManifest:
         ensure_command("ffmpeg")
         if not self.settings.has_modelark:
             raise RuntimeError("ARK_API_KEY is required to run StoryCast")
-        if not self.settings.has_seed_speech:
-            raise RuntimeError("Seed Speech credentials are required to run StoryCast")
 
+        tts_client = self.tts_client or self._build_tts_client()
         run_id = f"{datetime.now(UTC):%Y%m%dT%H%M%SZ}-{slugify(topic)}"
         run_dir = ensure_directory(self.settings.output_dir / run_id)
         manifest = RunManifest(
@@ -59,8 +67,8 @@ class StoryCastPipeline:
                 self._emit(progress_callback, f"Scene {scene.index}: generating keyframe with Seedream 5.0")
                 keyframe_url = self.modelark_client.generate_keyframe(blueprint, scene, keyframe_path)
 
-                self._emit(progress_callback, f"Scene {scene.index}: synthesizing narration with Seed Speech")
-                self.seed_speech_client.synthesize(scene.narration, audio_path)
+                self._emit(progress_callback, f"Scene {scene.index}: synthesizing narration with {self.settings.normalized_tts_provider}")
+                tts_client.synthesize(scene.narration, audio_path)
 
                 self._emit(progress_callback, f"Scene {scene.index}: animating clip with Seedance 2.0")
                 self.modelark_client.animate_scene(scene, keyframe_path, video_path)
@@ -97,6 +105,18 @@ class StoryCastPipeline:
             write_json(run_dir / "manifest.json", manifest.model_dump(mode="json"))
             self._emit(progress_callback, f"StoryCast failed: {exc}")
             raise
+
+    def _build_tts_client(self) -> TTSClient:
+        provider = self.settings.normalized_tts_provider
+        if provider == "elevenlabs":
+            if not self.settings.has_elevenlabs_tts:
+                raise RuntimeError("ELEVENLABS_API_KEY is required when TTS_PROVIDER=elevenlabs")
+            return ElevenLabsTTSClient(self.settings)
+        if provider == "seed_speech":
+            if not self.settings.has_seed_speech:
+                raise RuntimeError("Seed Speech credentials are required when TTS_PROVIDER=seed_speech")
+            return self.seed_speech_client or SeedSpeechClient(self.settings)
+        raise RuntimeError(f"Unsupported TTS_PROVIDER `{self.settings.tts_provider}`. Use `elevenlabs` or `seed_speech`.")
 
     @staticmethod
     def _emit(callback: ProgressCallback | None, message: str) -> None:

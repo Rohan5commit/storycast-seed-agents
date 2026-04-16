@@ -10,11 +10,15 @@ The project is intentionally shaped for the current judging rubric: strong video
 
 - `Seed 2.0` writes a structured six-scene story blueprint with narration, visual prompts, motion prompts, and tone metadata.
 - `Seedream 5.0` generates one keyframe per scene, turning the blueprint into a storyboard.
-- `Seed Speech` synthesizes voiceover for every scene.
 - `Seedance 2.0` animates each keyframe in image-to-video mode.
+- A TTS layer generates voiceover for every scene. The repo supports both `Seed Speech` and a temporary `ElevenLabs` fallback.
 - `ffmpeg` stitches the clips together and muxes scene audio into a final film.
 - A FastAPI web app gives you a clean demo surface for judges, and a CLI gives you a dead-simple fallback.
 - A GitHub Actions workflow lets you run renders entirely inside GitHub once repo secrets are configured.
+
+## Compliance Note
+
+The current repo supports `ElevenLabs` as a development fallback because getting Seed Speech activated can take longer than getting a ModelArk key. For a strict final challenge submission, switch `TTS_PROVIDER=seed_speech` and use real BytePlus Speech credentials.
 
 ## Product Flow
 
@@ -23,7 +27,7 @@ flowchart LR
     A[Topic] --> B[Seed 2.0 story director]
     B --> C[Scene blueprint JSON]
     C --> D[Seedream 5.0 keyframes]
-    C --> E[Seed Speech narration]
+    C --> E[TTS narration]
     D --> F[Seedance 2.0 I2V clips]
     E --> G[Scene muxing with ffmpeg]
     F --> G
@@ -33,7 +37,7 @@ flowchart LR
 ## Quick Start
 
 1. Create a virtual environment and install dependencies.
-2. Add your BytePlus credentials in `.env` or exported environment variables.
+2. Add your credentials in `.env` or exported environment variables.
 3. Run the CLI or web app.
 
 ```bash
@@ -56,22 +60,27 @@ The web app starts on `http://127.0.0.1:8000` by default.
 
 If you want the generation run itself to happen entirely in GitHub:
 
-1. Add repo secrets: `ARK_API_KEY`, `BYTEPLUS_TTS_APP_ID`, `BYTEPLUS_TTS_TOKEN`, `BYTEPLUS_TTS_CLUSTER`, and optionally `BYTEPLUS_TTS_VOICE_TYPE`.
-2. Open `Actions` and run `generate-storycast` with a topic.
-3. Download the uploaded `runs/` artifact from the workflow run.
+1. Add repo secret `ARK_API_KEY`.
+2. Add either `ELEVENLABS_API_KEY` or the BytePlus Speech secrets.
+3. Open `Actions` and run `generate-storycast` with a topic and `tts_provider` choice.
+4. Download the uploaded `runs/` artifact from the workflow run.
 
 ## Configuration
 
 Core settings live in `.env.example`.
 
 - `ARK_API_KEY`: ModelArk API key for Seed 2.0, Seedream 5.0, and Seedance 2.0.
+- `TTS_PROVIDER`: `elevenlabs` or `seed_speech`.
+- `ELEVENLABS_API_KEY`: Free-plan fallback TTS API key.
+- `ELEVENLABS_VOICE_ID`: Defaults to ElevenLabs “George” (`JBFqnCBsd6RMkjVDRZzb`).
+- `ELEVENLABS_MODEL_ID`: Defaults to `eleven_multilingual_v2`.
 - `SEED_STORY_MODEL`: Defaults to `seed-2-0-pro-260328`.
 - `SEEDREAM_MODEL`: Defaults to `seedream-5-0-260128`.
 - `SEEDANCE_MODEL`: Defaults to `dreamina-seedance-2-0-260128`.
 - `BYTEPLUS_TTS_APP_ID`, `BYTEPLUS_TTS_TOKEN`, `BYTEPLUS_TTS_CLUSTER`: Seed Speech credentials.
 - `BYTEPLUS_TTS_VOICE_TYPE`: Narrator voice selection.
 
-See [docs/byteplus-setup.md](docs/byteplus-setup.md) for the exact model IDs, endpoints, and docs links used to wire the stack.
+See [docs/byteplus-setup.md](docs/byteplus-setup.md) for the BytePlus stack and [docs/fallback-tts.md](docs/fallback-tts.md) for the free ElevenLabs setup.
 
 ## Demo Surfaces
 
@@ -96,6 +105,7 @@ See [docs/byteplus-setup.md](docs/byteplus-setup.md) for the exact model IDs, en
 │   ├── architecture.md
 │   ├── byteplus-setup.md
 │   ├── demo-script.md
+│   ├── fallback-tts.md
 │   └── submission-checklist.md
 ├── main.py
 ├── pyproject.toml
@@ -109,6 +119,7 @@ See [docs/byteplus-setup.md](docs/byteplus-setup.md) for the exact model IDs, en
 │   ├── prompting.py
 │   ├── utils.py
 │   ├── clients/
+│   │   ├── elevenlabs_tts.py
 │   │   ├── modelark.py
 │   │   └── seed_speech.py
 │   └── web/
@@ -124,6 +135,7 @@ See [docs/byteplus-setup.md](docs/byteplus-setup.md) for the exact model IDs, en
 
 - [Architecture](docs/architecture.md)
 - [BytePlus Setup](docs/byteplus-setup.md)
+- [Free Fallback TTS Setup](docs/fallback-tts.md)
 - [2-Minute Demo Script](docs/demo-script.md)
 - [Submission Checklist](docs/submission-checklist.md)
 
@@ -141,4 +153,6 @@ As of April 16, 2026, the public challenge page shows four challenge areas plus 
 - BytePlus Speech TTS HTTP API: https://docs.byteplus.com/zh-CN/docs/speech/docs-http-api
 - BytePlus Speech basic parameters: https://docs.byteplus.com/en/docs/speech/docs-request-parameters-2
 - Supported Seed Speech voices: https://docs.byteplus.com/en/docs/speech/docs-voice-parameters-1
-- Seedance prompt guide sample: https://docs.byteplus.com/en/docs/ModelArk/1631633
+- ElevenLabs API quickstart: https://elevenlabs.io/docs/eleven-api/guides/cookbooks/text-to-speech
+- ElevenLabs API pricing: https://elevenlabs.io/pricing/api
+- ElevenLabs Create speech API: https://elevenlabs.io/docs/api-reference/text-to-speech/convert

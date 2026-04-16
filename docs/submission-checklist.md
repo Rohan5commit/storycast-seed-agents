@@ -40,3 +40,4 @@ The public site currently lists four challenge areas and six specialty track-win
 - Confirm the final film is around 60 seconds.
 - Confirm the demo video itself is under 2 minutes.
 - Confirm the repo is public and the README is current.
+- If you used ElevenLabs during development, switch `TTS_PROVIDER` back to `seed_speech` before final submission.

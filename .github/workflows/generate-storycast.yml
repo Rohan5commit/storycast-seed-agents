@@ -16,6 +16,14 @@ on:
           - 480p
           - 720p
           - 1080p
+      tts_provider:
+        description: Voiceover provider
+        required: true
+        default: elevenlabs
+        type: choice
+        options:
+          - elevenlabs
+          - seed_speech
 
 jobs:
   render:
@@ -24,6 +32,8 @@ jobs:
       contents: read
     env:
       ARK_API_KEY: ${{ secrets.ARK_API_KEY }}
+      TTS_PROVIDER: ${{ inputs.tts_provider }}
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
       BYTEPLUS_TTS_APP_ID: ${{ secrets.BYTEPLUS_TTS_APP_ID }}
       BYTEPLUS_TTS_TOKEN: ${{ secrets.BYTEPLUS_TTS_TOKEN }}
       BYTEPLUS_TTS_CLUSTER: ${{ secrets.BYTEPLUS_TTS_CLUSTER }}
@@ -51,9 +61,16 @@ jobs:
       - name: Validate required secrets
         run: |
           test -n "$ARK_API_KEY"
-          test -n "$BYTEPLUS_TTS_APP_ID"
-          test -n "$BYTEPLUS_TTS_TOKEN"
-          test -n "$BYTEPLUS_TTS_CLUSTER"
+          if [ "$TTS_PROVIDER" = "elevenlabs" ]; then
+            test -n "$ELEVENLABS_API_KEY"
+          elif [ "$TTS_PROVIDER" = "seed_speech" ]; then
+            test -n "$BYTEPLUS_TTS_APP_ID"
+            test -n "$BYTEPLUS_TTS_TOKEN"
+            test -n "$BYTEPLUS_TTS_CLUSTER"
+          else
+            echo "Unsupported TTS provider: $TTS_PROVIDER" >&2
+            exit 1
+          fi
 
       - name: Generate StoryCast
         run: storycast create --topic "${{ inputs.topic }}"

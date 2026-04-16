@@ -89,12 +89,12 @@ def get_media(job_id: str, relative_path: str) -> FileResponse:
 
 def _run_storycast_job(job_id: str, topic: str) -> None:
     JOBS[job_id]["status"] = "running"
-    pipeline = StoryCastPipeline(get_settings())
 
     def progress(message: str) -> None:
         JOBS[job_id].setdefault("messages", []).append(message)
 
     try:
+        pipeline = StoryCastPipeline(get_settings())
         manifest = pipeline.run(topic, progress_callback=progress)
         JOBS[job_id]["status"] = "completed"
         JOBS[job_id]["run_dir"] = manifest.run_dir
