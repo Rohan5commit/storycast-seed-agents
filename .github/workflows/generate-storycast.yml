@@ -39,6 +39,10 @@ jobs:
       BYTEPLUS_TTS_CLUSTER: ${{ secrets.BYTEPLUS_TTS_CLUSTER }}
       BYTEPLUS_TTS_VOICE_TYPE: ${{ secrets.BYTEPLUS_TTS_VOICE_TYPE }}
       STORYCAST_RESOLUTION: ${{ inputs.resolution }}
+      SEED_STORY_MODEL: seed-2-0-lite-260228
+      SEEDANCE_MODEL: dreamina-seedance-2-0-fast-260128
+      STORYCAST_SCENE_COUNT: 4
+      STORYCAST_DURATION_SECONDS: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
