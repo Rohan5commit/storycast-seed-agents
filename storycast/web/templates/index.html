@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StoryCast</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="background-orb orb-one"></div>
+    <div class="background-orb orb-two"></div>
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">BytePlus Seed Multimodal Agent</p>
+        <h1>StoryCast</h1>
+        <p class="hero-copy">
+          One topic in. One narrated short film out. StoryCast turns a plain-English idea into a six-scene visual explainer using Seed 2.0, Seedream 5.0, Seed Speech, Seedance 2.0, and ffmpeg.
+        </p>
+      </section>
+
+      <section class="panel control-panel">
+        <form id="storycast-form">
+          <label for="topic">Topic</label>
+          <div class="input-row">
+            <input id="topic" name="topic" type="text" placeholder="the death of a star" required />
+            <button type="submit">Generate StoryCast</button>
+          </div>
+        </form>
+        <div class="examples">
+          {% for example in examples %}
+          <button class="chip" type="button" data-example="{{ example }}">{{ example }}</button>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <div class="panel-header">
+            <h2>Status Feed</h2>
+            <span id="status-pill" class="pill">idle</span>
+          </div>
+          <ol id="status-list" class="status-list">
+            <li>Waiting for a topic.</li>
+          </ol>
+        </article>
+
+        <article class="panel result-panel">
+          <div class="panel-header">
+            <h2>Render Output</h2>
+            <span class="panel-meta">Judge-ready demo surface</span>
+          </div>
+          <div id="result-empty" class="result-empty">
+            Your final StoryCast video will appear here after the pipeline finishes.
+          </div>
+          <div id="result-content" class="result-content hidden">
+            <video id="result-video" controls playsinline></video>
+            <div id="result-summary" class="summary"></div>
+            <div id="scene-grid" class="scene-grid"></div>
+          </div>
+        </article>
+      </section>
+    </main>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>
