@@ -1,0 +1,66 @@
+name: generate-storycast
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: Topic for the StoryCast render
+        required: true
+        type: string
+      resolution:
+        description: Video resolution passed to StoryCast
+        required: true
+        default: 720p
+        type: choice
+        options:
+          - 480p
+          - 720p
+          - 1080p
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      ARK_API_KEY: ${{ secrets.ARK_API_KEY }}
+      BYTEPLUS_TTS_APP_ID: ${{ secrets.BYTEPLUS_TTS_APP_ID }}
+      BYTEPLUS_TTS_TOKEN: ${{ secrets.BYTEPLUS_TTS_TOKEN }}
+      BYTEPLUS_TTS_CLUSTER: ${{ secrets.BYTEPLUS_TTS_CLUSTER }}
+      BYTEPLUS_TTS_VOICE_TYPE: ${{ secrets.BYTEPLUS_TTS_VOICE_TYPE }}
+      STORYCAST_RESOLUTION: ${{ inputs.resolution }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Validate required secrets
+        run: |
+          test -n "$ARK_API_KEY"
+          test -n "$BYTEPLUS_TTS_APP_ID"
+          test -n "$BYTEPLUS_TTS_TOKEN"
+          test -n "$BYTEPLUS_TTS_CLUSTER"
+
+      - name: Generate StoryCast
+        run: storycast create --topic "${{ inputs.topic }}"
+
+      - name: Upload render artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: storycast-${{ github.run_number }}
+          path: runs/
+          if-no-files-found: error

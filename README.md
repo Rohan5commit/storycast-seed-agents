@@ -14,6 +14,7 @@ The project is intentionally shaped for the current judging rubric: strong video
 - `Seedance 2.0` animates each keyframe in image-to-video mode.
 - `ffmpeg` stitches the clips together and muxes scene audio into a final film.
 - A FastAPI web app gives you a clean demo surface for judges, and a CLI gives you a dead-simple fallback.
+- A GitHub Actions workflow lets you run renders entirely inside GitHub once repo secrets are configured.
 
 ## Product Flow
 
@@ -51,6 +52,14 @@ storycast serve --reload
 
 The web app starts on `http://127.0.0.1:8000` by default.
 
+## GitHub-Only Render Path
+
+If you want the generation run itself to happen entirely in GitHub:
+
+1. Add repo secrets: `ARK_API_KEY`, `BYTEPLUS_TTS_APP_ID`, `BYTEPLUS_TTS_TOKEN`, `BYTEPLUS_TTS_CLUSTER`, and optionally `BYTEPLUS_TTS_VOICE_TYPE`.
+2. Open `Actions` and run `generate-storycast` with a topic.
+3. Download the uploaded `runs/` artifact from the workflow run.
+
 ## Configuration
 
 Core settings live in `.env.example`.
@@ -68,6 +77,7 @@ See [docs/byteplus-setup.md](docs/byteplus-setup.md) for the exact model IDs, en
 
 - `storycast create --topic "..."`: Runs the full pipeline from the terminal.
 - `storycast serve`: Starts the FastAPI app with a launch-ready interface for judges.
+- `Actions > generate-storycast`: Runs the pipeline in GitHub with repository secrets.
 - `GET /health`: Lightweight status endpoint.
 - `POST /api/storycasts`: Creates a StoryCast job.
 - `GET /api/storycasts/{job_id}`: Polls job status and returns the generated manifest.
@@ -77,6 +87,7 @@ See [docs/byteplus-setup.md](docs/byteplus-setup.md) for the exact model IDs, en
 ```text
 .
 ├── .github/workflows/ci.yml
+├── .github/workflows/generate-storycast.yml
 ├── .env.example
 ├── Dockerfile
 ├── Makefile
