@@ -6,7 +6,12 @@ StoryCast is an autonomous multimodal storytelling agent built for the Beta Univ
 
 The project is intentionally shaped for the current judging rubric: strong video output, obvious agentic execution, and a demo flow that is easy to show live.
 
+## Submission Links
 
+- Landing page: https://rohan5commit.github.io/storycast-seed-agents/
+- Successful GitHub render: https://github.com/Rohan5commit/storycast-seed-agents/actions/runs/24514194069
+- Submission package: docs/submission-package.md
+- Demo runbook: docs/demo-runbook.md
 
 ## Why This Fits The Challenge
 
