@@ -9,6 +9,7 @@ Updated: April 18, 2026
 - Successful GitHub render: https://github.com/Rohan5commit/storycast-seed-agents/actions/runs/24514194069
 - Architecture: https://github.com/Rohan5commit/storycast-seed-agents/blob/main/docs/architecture.md
 - Demo runbook: https://github.com/Rohan5commit/storycast-seed-agents/blob/main/docs/demo-runbook.md
+- Demo video page: https://rohan5commit.github.io/storycast-seed-agents/demo.html
 
 ## Recommended Challenge Area
 
