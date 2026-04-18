@@ -1,6 +1,6 @@
 # Submission Checklist
 
-Verified against the public challenge page on April 16, 2026.
+Verified against the public challenge page on April 18, 2026.
 
 ## Competition Dates
 
@@ -14,30 +14,33 @@ Verified against the public challenge page on April 16, 2026.
 - Agentic Execution: 40%
 - Demo & Presentation: 20%
 
-## Recommended Demo Structure From The Public Page
+## Recommended Challenge Area
 
-- About 1 minute: live demo with a full user flow
-- About 30 seconds: technical architecture and Seed model integration
-- About 30 seconds: post-hackathon vision
+- Best fit: `Track 01 - AI Video Agents`
+- Secondary angle: `Track 02 - Content Automation`
 
 ## StoryCast Submission Assets
 
-- Public GitHub repository
-- README with clear setup and system explanation
-- Runnable app and CLI
-- Architecture notes
-- Demo script
-- Example final video generated from a real topic
+- Public repository: https://github.com/Rohan5commit/storycast-seed-agents
+- Landing page: https://rohan5commit.github.io/storycast-seed-agents/
+- Successful GitHub render: https://github.com/Rohan5commit/storycast-seed-agents/actions/runs/24514194069
+- Architecture notes: https://github.com/Rohan5commit/storycast-seed-agents/blob/main/docs/architecture.md
+- Demo runbook: https://github.com/Rohan5commit/storycast-seed-agents/blob/main/docs/demo-runbook.md
+- Submission package: https://github.com/Rohan5commit/storycast-seed-agents/blob/main/docs/submission-package.md
 
-## Important Positioning Note
+## Current Status Snapshot
 
-The public site currently lists four challenge areas and six specialty track-winner prizes. The original prompt for this repo referenced “Track 5 — Most Creative.” To stay accurate, StoryCast is positioned as a creative multimodal submission without hard-coding a track number into the repo copy.
+- Public repo exists: yes
+- CI is green on the current shipping branch: yes
+- At least one end-to-end GitHub render completed successfully: yes
+- Two-minute demo script is ready: yes
+- Submission-facing landing page exists: yes
+- Strict BytePlus-only narration path is configured with live credentials: not yet
 
 ## Final Pre-Submit Pass
 
-- Confirm all video clips were generated with BytePlus Seed video models only.
-- Confirm the final demo explicitly names Seed 2.0, Seedream 5.0, Seed Speech, and Seedance 2.0.
-- Confirm the final film is around 60 seconds.
-- Confirm the demo video itself is under 2 minutes.
-- Confirm the repo is public and the README is current.
-- If you used ElevenLabs during development, switch `TTS_PROVIDER` back to `seed_speech` before final submission.
+- Keep the demo video under 2 minutes.
+- Open with the final StoryCast output before the architecture explanation.
+- Explicitly name `Seed 2.0`, `Seedream 5.0`, and `Seedance 2.0` during the demo.
+- If you have real Seed Speech credentials before final submission, switch back from fallback TTS and rerun once.
+- Keep the messaging honest: the current public proof run used fallback TTS for narration.
