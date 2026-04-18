@@ -6,6 +6,8 @@ StoryCast is an autonomous multimodal storytelling agent built for the Beta Univ
 
 The project is intentionally shaped for the current judging rubric: strong video output, obvious agentic execution, and a demo flow that is easy to show live.
 
+
+
 ## Why This Fits The Challenge
 
 - `Seed 2.0` writes a structured six-scene story blueprint with narration, visual prompts, motion prompts, and tone metadata.
@@ -138,6 +140,8 @@ See [docs/byteplus-setup.md](docs/byteplus-setup.md) for the BytePlus stack and 
 - [Free Fallback TTS Setup](docs/fallback-tts.md)
 - [2-Minute Demo Script](docs/demo-script.md)
 - [Submission Checklist](docs/submission-checklist.md)
+- [Submission Package](docs/submission-package.md)
+- [Demo Runbook](docs/demo-runbook.md)
 
 ## Notes On Challenge Positioning
 
