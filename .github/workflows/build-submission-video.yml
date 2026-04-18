@@ -51,52 +51,51 @@ jobs:
           fi
 
           FONT_BOLD=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
-          FONT_REG=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
 
-          cat > out/slide_1.mp4.txt <<'TXT'
-StoryCast
-One topic in. One narrated short film out.
-TXT
+          printf '%s\n' \
+            'StoryCast' \
+            'One topic in. One narrated short film out.' \
+            > out/slide_1.txt
 
-          cat > out/slide_2.mp4.txt <<'TXT'
-How it works
-1. Seed 2.0 plans scenes and narration.
-2. Seedream 5.0 generates keyframes.
-3. Seedance 2.0 turns frames into clips.
-4. ffmpeg assembles the final film.
-TXT
+          printf '%s\n' \
+            'How it works' \
+            '1. Seed 2.0 plans scenes and narration.' \
+            '2. Seedream 5.0 generates keyframes.' \
+            '3. Seedance 2.0 turns frames into clips.' \
+            '4. ffmpeg assembles the final film.' \
+            > out/slide_2.txt
 
-          cat > out/slide_3.mp4.txt <<'TXT'
-Why it scores well
-- visible agentic execution
-- clear multimodal pipeline
-- reproducible GitHub-native render
-TXT
+          printf '%s\n' \
+            'Why it scores well' \
+            '- visible agentic execution' \
+            '- clear multimodal pipeline' \
+            '- reproducible GitHub-native render' \
+            > out/slide_3.txt
 
           ffmpeg -y -f lavfi -i color=c=0x14213d:s=1280x720:d=10 \
-            -vf "drawtext=fontfile=${FONT_BOLD}:textfile=out/slide_1.mp4.txt:fontcolor=white:fontsize=58:line_spacing=18:x=(w-text_w)/2:y=(h-text_h)/2" \
+            -vf "drawtext=fontfile=${FONT_BOLD}:textfile=out/slide_1.txt:fontcolor=white:fontsize=58:line_spacing=18:x=(w-text_w)/2:y=(h-text_h)/2" \
             -c:v libx264 -pix_fmt yuv420p out/slide_1.mp4
 
           ffmpeg -y -f lavfi -i color=c=0x1f3b4d:s=1280x720:d=16 \
-            -vf "drawtext=fontfile=${FONT_BOLD}:textfile=out/slide_2.mp4.txt:fontcolor=white:fontsize=42:line_spacing=20:x=(w-text_w)/2:y=(h-text_h)/2" \
+            -vf "drawtext=fontfile=${FONT_BOLD}:textfile=out/slide_2.txt:fontcolor=white:fontsize=42:line_spacing=20:x=(w-text_w)/2:y=(h-text_h)/2" \
             -c:v libx264 -pix_fmt yuv420p out/slide_2.mp4
 
           ffmpeg -y -f lavfi -i color=c=0x7a4b32:s=1280x720:d=14 \
-            -vf "drawtext=fontfile=${FONT_BOLD}:textfile=out/slide_3.mp4.txt:fontcolor=white:fontsize=44:line_spacing=20:x=(w-text_w)/2:y=(h-text_h)/2" \
+            -vf "drawtext=fontfile=${FONT_BOLD}:textfile=out/slide_3.txt:fontcolor=white:fontsize=44:line_spacing=20:x=(w-text_w)/2:y=(h-text_h)/2" \
             -c:v libx264 -pix_fmt yuv420p out/slide_3.mp4
 
           ffmpeg -y -ss 0 -t 20 -i "$VIDEO" -c:v libx264 -c:a aac out/clip_a.mp4
           ffmpeg -y -ss 20 -t 20 -i "$VIDEO" -c:v libx264 -c:a aac out/clip_b.mp4
           ffmpeg -y -ss 40 -t 20 -i "$VIDEO" -c:v libx264 -c:a aac out/clip_c.mp4
 
-          cat > out/concat.txt <<'TXT'
-file 'slide_1.mp4'
-file 'clip_a.mp4'
-file 'slide_2.mp4'
-file 'clip_b.mp4'
-file 'slide_3.mp4'
-file 'clip_c.mp4'
-TXT
+          printf "%s\n" \
+            "file 'slide_1.mp4'" \
+            "file 'clip_a.mp4'" \
+            "file 'slide_2.mp4'" \
+            "file 'clip_b.mp4'" \
+            "file 'slide_3.mp4'" \
+            "file 'clip_c.mp4'" \
+            > out/concat.txt
 
           ffmpeg -y -f concat -safe 0 -i out/concat.txt -c copy out/storycast_submission_demo.mp4
 
