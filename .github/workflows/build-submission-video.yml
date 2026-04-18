@@ -1,0 +1,107 @@
+name: build-submission-video
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: GitHub Actions run ID that contains the generated StoryCast artifact
+        required: true
+        default: "24514194069"
+      artifact_name:
+        description: Name of the render artifact to use as the source clip
+        required: true
+        default: "storycast-4"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build-demo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Download render artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download "${{ inputs.source_run_id }}" \
+            --repo "${{ github.repository }}" \
+            --name "${{ inputs.artifact_name }}" \
+            --dir source_render
+          find source_render -type f | sort
+
+      - name: Build pitch video
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          VIDEO=$(find source_render -type f -name '*.mp4' | head -n 1)
+          if [ -z "$VIDEO" ]; then
+            echo "No mp4 found in downloaded artifact" >&2
+            exit 1
+          fi
+
+          FONT_BOLD=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
+          FONT_REG=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+
+          cat > out/slide_1.mp4.txt <<'TXT'
+StoryCast
+One topic in. One narrated short film out.
+TXT
+
+          cat > out/slide_2.mp4.txt <<'TXT'
+How it works
+1. Seed 2.0 plans scenes and narration.
+2. Seedream 5.0 generates keyframes.
+3. Seedance 2.0 turns frames into clips.
+4. ffmpeg assembles the final film.
+TXT
+
+          cat > out/slide_3.mp4.txt <<'TXT'
+Why it scores well
+- visible agentic execution
+- clear multimodal pipeline
+- reproducible GitHub-native render
+TXT
+
+          ffmpeg -y -f lavfi -i color=c=0x14213d:s=1280x720:d=10 \
+            -vf "drawtext=fontfile=${FONT_BOLD}:textfile=out/slide_1.mp4.txt:fontcolor=white:fontsize=58:line_spacing=18:x=(w-text_w)/2:y=(h-text_h)/2" \
+            -c:v libx264 -pix_fmt yuv420p out/slide_1.mp4
+
+          ffmpeg -y -f lavfi -i color=c=0x1f3b4d:s=1280x720:d=16 \
+            -vf "drawtext=fontfile=${FONT_BOLD}:textfile=out/slide_2.mp4.txt:fontcolor=white:fontsize=42:line_spacing=20:x=(w-text_w)/2:y=(h-text_h)/2" \
+            -c:v libx264 -pix_fmt yuv420p out/slide_2.mp4
+
+          ffmpeg -y -f lavfi -i color=c=0x7a4b32:s=1280x720:d=14 \
+            -vf "drawtext=fontfile=${FONT_BOLD}:textfile=out/slide_3.mp4.txt:fontcolor=white:fontsize=44:line_spacing=20:x=(w-text_w)/2:y=(h-text_h)/2" \
+            -c:v libx264 -pix_fmt yuv420p out/slide_3.mp4
+
+          ffmpeg -y -ss 0 -t 20 -i "$VIDEO" -c:v libx264 -c:a aac out/clip_a.mp4
+          ffmpeg -y -ss 20 -t 20 -i "$VIDEO" -c:v libx264 -c:a aac out/clip_b.mp4
+          ffmpeg -y -ss 40 -t 20 -i "$VIDEO" -c:v libx264 -c:a aac out/clip_c.mp4
+
+          cat > out/concat.txt <<'TXT'
+file 'slide_1.mp4'
+file 'clip_a.mp4'
+file 'slide_2.mp4'
+file 'clip_b.mp4'
+file 'slide_3.mp4'
+file 'clip_c.mp4'
+TXT
+
+          ffmpeg -y -f concat -safe 0 -i out/concat.txt -c copy out/storycast_submission_demo.mp4
+
+      - name: Upload submission demo artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: storycast-submission-demo
+          path: out/storycast_submission_demo.mp4
