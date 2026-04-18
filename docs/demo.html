@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>StoryCast Demo Video</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg: #0f172a;
+        --ink: #f8fafc;
+        --muted: #cbd5e1;
+        --panel: rgba(15, 23, 42, 0.78);
+        --line: rgba(248, 250, 252, 0.12);
+        --accent: #f97316;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(249, 115, 22, 0.28), transparent 24%),
+          radial-gradient(circle at right, rgba(56, 189, 248, 0.22), transparent 28%),
+          linear-gradient(180deg, #020617 0%, #111827 100%);
+      }
+      main {
+        width: min(1040px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 36px 0 60px;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        padding: 28px;
+        backdrop-filter: blur(10px);
+      }
+      .eyebrow {
+        font-family: "IBM Plex Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--accent);
+        font-size: 12px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(34px, 6vw, 62px);
+        line-height: 0.98;
+      }
+      p {
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.6;
+      }
+      .player {
+        margin-top: 22px;
+        overflow: hidden;
+        border-radius: 22px;
+        border: 1px solid var(--line);
+        background: #000;
+      }
+      video {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 22px;
+      }
+      a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 13px 18px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        text-decoration: none;
+        color: var(--ink);
+        background: rgba(255,255,255,0.04);
+        font-weight: 700;
+      }
+      a.primary {
+        background: #f8fafc;
+        color: #0f172a;
+      }
+      .note {
+        margin-top: 18px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <div class="eyebrow">Submission Demo</div>
+        <h1>StoryCast demo video</h1>
+        <p>
+          This is the public submission demo for StoryCast, the autonomous multimodal video agent built for the Beta University Seed Agents Challenge.
+        </p>
+        <div class="player">
+          <video controls playsinline preload="metadata" poster="https://rohan5commit.github.io/storycast-seed-agents/">
+            <source src="assets/storycast_submission_demo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div class="actions">
+          <a class="primary" href="assets/storycast_submission_demo.mp4">Open MP4</a>
+          <a href="https://rohan5commit.github.io/storycast-seed-agents/">Project landing page</a>
+          <a href="https://github.com/Rohan5commit/storycast-seed-agents">GitHub repository</a>
+        </div>
+        <div class="note">
+          If the video player is blank right after a new publish, refresh once after GitHub Pages finishes deploying the latest commit.
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
